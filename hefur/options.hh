@@ -8,6 +8,7 @@ namespace hefur
 {
   extern const uint32_t &    MAX_TORRENT_SIZE;
   extern const uint32_t &    MAX_TORRENT_NAME;
+  extern const std::string & TORRENT_EXTENSION;
   extern const uint32_t &    MAX_SCAN_DEPTH;
   extern const uint32_t &    MAX_SCAN_INODES;
   extern const uint32_t &    MAX_PEERS;

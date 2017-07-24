@@ -43,7 +43,8 @@ namespace hefur
           return false;
         }
 
-        if (::fnmatch("*.torrent", path.c_str(), FNM_CASEFOLD | FNM_IGNORECASE))
+        if (::fnmatch(TORRENT_EXTENSION.c_str(), path.c_str(),
+                      FNM_CASEFOLD | FNM_IGNORECASE))
           return true;
 
         auto tdb = Hefur::instance().torrentDb();
