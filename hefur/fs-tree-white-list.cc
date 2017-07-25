@@ -1,3 +1,4 @@
+#include <fstream>
 #include <fnmatch.h>
 
 #include <mimosa/fs/find.hh>
@@ -6,6 +7,9 @@
 #include "hefur.hh"
 #include "options.hh"
 #include "log.hh"
+
+#define D8ANNOUNCE "d8:announce"
+#define D13ANNOUNCELIST "d13:announce-list"
 
 #ifndef FNM_CASEFOLD
 # define FNM_CASEFOLD 0
@@ -43,8 +47,27 @@ namespace hefur
           return false;
         }
 
-        if (::fnmatch("*.torrent", path.c_str(), FNM_CASEFOLD | FNM_IGNORECASE))
+        std::ifstream file(path.c_str(), std::ios::in);
+        if (!file.is_open()) {
+          log->error("could not open file %s: %s", path, strerror(errno));
           return true;
+        }
+
+        char file_start[17] = {0};
+        try {
+          file.get(file_start, sizeof (file_start));
+        }
+        catch (std::ifstream::failure e) {
+          log->error("could not read file %s: ", path, strerror(errno));
+          return true;
+        }
+
+        if (!::strncmp(file_start, D8ANNOUNCE, sizeof (D8ANNOUNCE))
+         || !::strncmp(file_start, D13ANNOUNCELIST, sizeof (D13ANNOUNCELIST)))
+        {
+          log->error("file %s is not a torrent file", path);
+          return true;
+        }
 
         auto tdb = Hefur::instance().torrentDb();
         if (tdb)
